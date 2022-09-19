@@ -2,7 +2,6 @@ package com.example.demo.List;
 
 import com.example.demo.List.Interface.List;
 
-import java.security.PublicKey;
 import java.util.Arrays;
 
 public class ArrayList<E> implements List<E>, Cloneable {
@@ -249,8 +248,4 @@ public class ArrayList<E> implements List<E>, Cloneable {
         System.arraycopy(array, 0, a, 0, size);
         return a;
     }
-
-
-
-
 }

@@ -2,12 +2,14 @@ package com.example.demo.List;
 
 import com.example.demo.List.Interface.List;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
-public class SinglyLinkedList<E> implements List<E> {
+public class SinglyLinkedList<E> implements List<E>, Cloneable {
 
-    private Node<E> head; // 노드 첫 부분.
-    private Node<E> tail; // 노드 마지막 부분.
+    private SinglyNode<E> head; // 노드 첫 부분.
+    private SinglyNode<E> tail; // 노드 마지막 부분.
     private int size; // 요소 개수.
 
     public SinglyLinkedList() {
@@ -21,12 +23,12 @@ public class SinglyLinkedList<E> implements List<E> {
      * @param index
      * @return
      */
-    private Node<E> search(int index) {
+    private SinglyNode<E> search(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
 
-        Node<E> searchNode = head;
+        SinglyNode<E> searchNode = head;
 
         for (int i = 0; i < index; i++) {
             searchNode = searchNode.next;
@@ -60,8 +62,8 @@ public class SinglyLinkedList<E> implements List<E> {
             return;
         }
 
-        Node<E> newNode = new Node<>(value);
-        Node<E> prevNode = search(index - 1);
+        SinglyNode<E> newNode = new SinglyNode<>(value);
+        SinglyNode<E> prevNode = search(index - 1);
 
         newNode.next = prevNode.next;
         prevNode.next = null;
@@ -70,7 +72,7 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     public void addFirst(E value) {
-        Node<E> newNode = new Node<>(value);
+        SinglyNode<E> newNode = new SinglyNode<>(value);
         newNode.next = head;
         head = newNode;
         size++;
@@ -81,7 +83,7 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     public void addLast(E value) {
-        Node<E> newNode = new Node<>(value);
+        SinglyNode<E> newNode = new SinglyNode<>(value);
 
         if (size == 0) {
             addFirst(value);
@@ -99,7 +101,7 @@ public class SinglyLinkedList<E> implements List<E> {
      * @return
      */
     public E remove() {
-        Node<E> headNode = head;
+        SinglyNode<E> headNode = head;
 
         if (headNode == null) {
             throw new NoSuchElementException();
@@ -107,7 +109,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
         E returnElement = headNode.data;
 
-        Node<E> nextNode = headNode.next;
+        SinglyNode<E> nextNode = headNode.next;
 
         head.next = null;
         head.data = null;
@@ -131,9 +133,9 @@ public class SinglyLinkedList<E> implements List<E> {
             return remove();
         }
 
-        Node<E> prevNode = search(index - 1);
-        Node<E> removeNode = prevNode.next;
-        Node<E> nextNode = removeNode.next;
+        SinglyNode<E> prevNode = search(index - 1);
+        SinglyNode<E> removeNode = prevNode.next;
+        SinglyNode<E> nextNode = removeNode.next;
 
         E returnElement = removeNode.data;
 
@@ -155,8 +157,8 @@ public class SinglyLinkedList<E> implements List<E> {
     @Override
     public boolean remove(Object value) {
 
-        Node<E> prevNode = head;
-        Node<E> removeNode = head;
+        SinglyNode<E> prevNode = head;
+        SinglyNode<E> removeNode = head;
         boolean hasValue = false;
 
         for (; removeNode != null; removeNode = removeNode.next) {
@@ -199,7 +201,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public void set(int index, E value) {
-        Node<E> modifiedNode = search(index);
+        SinglyNode<E> modifiedNode = search(index);
 
         modifiedNode.data = null;
         modifiedNode.data = value;
@@ -214,7 +216,7 @@ public class SinglyLinkedList<E> implements List<E> {
     public int indexOf(Object value) {
         int index = 0;
 
-        for (Node<E> x = head; x != null; x = x.next) {
+        for (SinglyNode<E> x = head; x != null; x = x.next) {
             if (value.equals(x)) {
                 return index;
             }
@@ -236,8 +238,8 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public void clear() {
-        for (Node<E> x = head; x != null; ) {
-            Node<E> nextNode = x.next;
+        for (SinglyNode<E> x = head; x != null; ) {
+            SinglyNode<E> nextNode = x.next;
             x.data = null;
             x.next = null;
             x = nextNode;
@@ -247,4 +249,94 @@ public class SinglyLinkedList<E> implements List<E> {
         size = 0;
 
     }
+
+    public Object clone() throws CloneNotSupportedException {
+
+        @SuppressWarnings("unchecked")
+        SinglyLinkedList<? super E> clone = (SinglyLinkedList<? super E>) super.clone();
+
+        clone.head = null;
+        clone.tail = null;
+        clone.size = 0;
+
+        for (SinglyNode<E> x = head; x != null; x = x.next) {
+            clone.addLast(x.data);
+        }
+
+        return clone;
+    }
+
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+        int idx = 0;
+
+        for (SinglyNode<E> x = head; x != null; x = x.next) {
+            array[idx++] = (E) x.data;
+        }
+
+        return array;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+            // Array.newInstance(컴포넌트 타입, 생성할 크기)
+            a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
+        }
+
+        int i = 0;
+        Object[] result = a;
+
+        for (SinglyNode<E> x = head; x != null; x = x.next) {
+            result[i++] = x.data;
+        }
+
+        return a;
+    }
+
+    public void sort() {
+        sort(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super E> c) {
+        Object[] a = this.toArray();
+        Arrays.sort(a, (Comparator) c);
+
+        int i = 0;
+        for (SinglyNode<E> x = head; x != null; x = x.next, i++) {
+            x.data = (E) a[i];
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

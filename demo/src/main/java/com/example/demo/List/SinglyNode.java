@@ -1,10 +1,10 @@
 package com.example.demo.List;
 
-public class Node<E> {
+public class SinglyNode<E> {
     E data;
-    Node<E> next;
+    SinglyNode<E> next;
 
-    Node(E data) {
+    SinglyNode(E data) {
         this.data = data;
         this.next = null;
     }

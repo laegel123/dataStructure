@@ -1,6 +1,9 @@
 package com.example.demo.List;
 
 import com.example.demo.List.Interface.List;
+import org.w3c.dom.Node;
+
+import java.util.NoSuchElementException;
 
 public class DoublyLinkedList<E> implements List<E> {
 
@@ -110,46 +113,185 @@ public class DoublyLinkedList<E> implements List<E> {
 
     @Override
     public E remove(int index) {
-        return null;
+
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        if (index == 0) {
+            E returnElement = head.data;
+            remove();
+            return returnElement;
+        }
+
+        DoublyNode<E> prevNode = searchNode(index - 1);
+        DoublyNode<E> removedNode = prevNode.next;
+        DoublyNode<E> nextNode = removedNode.next;
+
+        E returnElement = removedNode.data;
+
+        prevNode.next = null;
+        removedNode.prev = null;
+        removedNode.next = null;
+        removedNode.data = null;
+
+        if (nextNode != null) {
+            nextNode.prev = null;
+
+            nextNode.prev = prevNode;
+            prevNode.next = nextNode;
+        } else {
+            tail = prevNode;
+        }
+
+        size--;
+
+        return returnElement;
     }
 
     @Override
     public boolean remove(Object value) {
-        return false;
+        DoublyNode<E> prevNode = head;
+        DoublyNode<E> node = head;
+
+        for (; node != null; node = node.next) {
+            if (value.equals(node.data)) {
+                break;
+            }
+
+            prevNode = node;
+        }
+
+        if (node == null) {
+            return false;
+        }
+
+        if (node.equals(head)) {
+            remove();
+
+            return true;
+        } else {
+            DoublyNode<E> nextNode = node.next;
+
+            prevNode.next = null;
+            node.next = null;
+            node.prev = null;
+            node.data = null;
+
+            if (nextNode != null) {
+                nextNode.prev = null;
+
+                nextNode.prev = prevNode;
+                prevNode.next = nextNode;
+            } else {
+                tail = prevNode;
+            }
+
+            size--;
+
+            return true;
+        }
+    }
+
+    public E remove() {
+        DoublyNode<E> headNode = head;
+
+        if (headNode == null) {
+            throw new NoSuchElementException();
+        }
+
+        E returnElement = headNode.data;
+        DoublyNode<E> nextNode = headNode.next;
+
+        headNode.data = null;
+        headNode.next = null;
+
+        if (nextNode != null) {
+            nextNode.prev = null;
+        }
+
+        head = nextNode;
+        size--;
+
+        if (size == 0) {
+            tail = null;
+        }
+
+        return returnElement;
     }
 
     @Override
     public E get(int index) {
-        return null;
+        return searchNode(index).data;
     }
 
     @Override
     public void set(int index, E value) {
+        DoublyNode<E> replaceNode = searchNode(index);
 
+        replaceNode.data = null;
+        replaceNode.data = value;
     }
 
     @Override
     public boolean contains(Object value) {
-        return false;
+        return indexOf(value) >= 0;
     }
 
     @Override
     public int indexOf(Object value) {
-        return 0;
+        int index = 0;
+
+        for (DoublyNode<E> node = head; node != null; node = node.next) {
+            if (value.equals(node.data)) {
+                return index;
+            }
+            index++;
+        }
+
+        return -1;
+    }
+
+    /**
+     * 거꾸로 indexOf 동작시킨다.
+     * @param value
+     * @return
+     */
+    public int lastIndexOf(Object value) {
+        int index = size;
+
+        for (DoublyNode<E> node = tail; node != null; node = node.prev) {
+            index--;
+
+            if (value.equals(node.data)) {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     @Override
     public void clear() {
+        for (DoublyNode<E> node = head; node != null; ) {
+            DoublyNode<E> nextNode = node.next;
+            node.data = null;
+            node.next = null;
+            node.prev = null;
+            node = nextNode;
+        }
 
+        head = tail = null;
+        size = 0;
     }
 }

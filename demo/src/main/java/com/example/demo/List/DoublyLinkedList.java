@@ -3,6 +3,8 @@ package com.example.demo.List;
 import com.example.demo.List.Interface.List;
 import org.w3c.dom.Node;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 public class DoublyLinkedList<E> implements List<E> {
@@ -293,5 +295,61 @@ public class DoublyLinkedList<E> implements List<E> {
 
         head = tail = null;
         size = 0;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+
+        @SuppressWarnings("unchecked")
+        DoublyLinkedList<? super E> clone = (DoublyLinkedList<? super E>) super.clone();
+
+        clone.head = null;
+        clone.tail = null;
+        clone.size = 0;
+
+        for (DoublyNode<E> node = head; node != null; node = node.next) {
+            clone.addLast(node.data);
+        }
+
+        return clone;
+    }
+
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+        int idx = 0;
+        for (DoublyNode<E> node = head; node != null; node = node.next) {
+            array[idx++] = (E) node.data;
+        }
+
+        return array;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+            a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
+        }
+
+        int i = 0;
+        Object[] result = a;
+        for (DoublyNode<E> node = head; node != null; node = node.next) {
+            result[i++] = node.data;
+        }
+
+        return a;
+    }
+
+    public void sort() {
+        sort(null);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void sort(Comparator<? super E> comparator) {
+        Object[] a = this.toArray();
+        Arrays.sort(a, (Comparator) comparator);
+
+        int i = 0;
+        for (DoublyNode<E> node = head; node != null; node = node.next, i++) {
+            node.data = (E) a[i];
+        }
     }
 }
